@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DMCS Dashboard | Disaster Management and Coordination System</title>
+<style>
+:root{--bg:#f4f7f5;--card:#fff;--text:#14231a;--muted:#5b6b61;--accent:#1e7a4a;--accent2:#e08a1e;--bad:#c0392b;--border:#d9e2dc;--track:#e5ece8;color-scheme:light;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0c1a12;--card:#132419;--text:#e6f1ea;--muted:#8fa699;--accent:#3ecf7e;--accent2:#f0a63a;--bad:#ff6b5b;--border:#25402f;--track:#1c3226;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0c1a12;--card:#132419;--text:#e6f1ea;--muted:#8fa699;--accent:#3ecf7e;--accent2:#f0a63a;--bad:#ff6b5b;--border:#25402f;--track:#1c3226;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+header{padding:18px 20px 8px;max-width:1100px;margin:0 auto;display:flex;gap:12px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+h1{font-size:21px;margin:0}header p{margin:2px 0 0;color:var(--muted);font-size:13px}
+.tgl{background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:13px}
+nav{max-width:1100px;margin:0 auto;padding:6px 20px;display:flex;gap:6px;overflow-x:auto}
+nav button{white-space:nowrap;border:1px solid var(--border);background:var(--card);color:var(--text);padding:8px 14px;border-radius:999px;cursor:pointer;font-size:14px}
+nav button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+main{max-width:1100px;margin:0 auto;padding:10px 20px 40px}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+.kpi b{display:block;font-size:26px;color:var(--accent)}.kpi span{font-size:13px;color:var(--muted)}
+h2{font-size:16px;margin:18px 0 8px}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);white-space:nowrap}
+th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+.pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:600;color:#fff}
+.bar{height:10px;background:var(--track);border-radius:6px;overflow:hidden;min-width:120px}
+.bar i{display:block;height:100%;border-radius:6px;background:var(--accent)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:8px 0}
+select,input{background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:7px 10px;font-size:14px}
+.btn{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:8px 14px;cursor:pointer;font-size:14px}
+.note{color:var(--muted);font-size:13px}
+pre{background:var(--track);border-radius:8px;padding:12px;overflow-x:auto;font-size:12.5px;margin:6px 0}
+.two{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.hide{display:none}
+</style>
+</head>
+<body>
+<header>
+  <div><h1>Disaster Management and Coordination System</h1>
+  <p>BACSE202 Database Systems | Review 3 dashboard | Somil Kothari, 25BCE2186</p></div>
+  <button class="tgl" id="theme">Toggle theme</button>
+</header>
+<nav id="nav"></nav>
+<main id="main"></main>
+<script>
+const D=[[1,'Cyclone',5,'2026-09-12','Cuddalore, Tamil Nadu'],[2,'Flood',4,'2026-09-20','Wayanad, Kerala'],[3,'Earthquake',3,'2026-10-02','Bhuj, Gujarat'],[4,'Industrial Fire',2,'2026-10-05','Vizag, Andhra Pradesh']].map(([id,type,sev,date,loc])=>({id,type,sev,date,loc}));
+const A=[[1,1,'Parangipettai',42000,40],[2,1,'Chidambaram',65000,60],[3,2,'Meppadi',28000,120],[4,2,'Kalpetta',35000,90],[5,3,'Anjar',51000,200],[6,4,'Gajuwaka',23000,15],[7,3,'Bhachau',18000,230]].map(([id,d,name,pop,km])=>({id,d,name,pop,km}));
+const R=[[1,'Drinking Water',50000,'litres','Chennai Warehouse'],[2,'Food Packets',20000,'packets','Vellore Depot'],[3,'Medical Kits',1500,'kits','Bengaluru Hub'],[4,'Blankets',8000,'pieces','Coimbatore Depot'],[5,'Tents',600,'units','Hyderabad Hub']].map(([id,name,qty,unit,loc])=>({id,name,qty,unit,loc}));
+const Q=[[1,1,1,12000,5,'2026-09-13'],[2,2,1,15000,4,'2026-09-13'],[3,1,2,6000,5,'2026-09-13'],[4,3,3,500,5,'2026-09-21'],[5,4,3,400,3,'2026-09-21'],[6,3,4,2500,3,'2026-09-22'],[7,5,5,300,4,'2026-10-03'],[8,6,3,120,2,'2026-10-05'],[9,2,2,9000,4,'2026-09-14']].map(([id,a,r,qty,urg,date])=>({id,a,r,qty,urg,date}));
+const AL=[[1,1,1,12000],[2,3,2,6000],[3,4,3,500]].map(([id,req,r,qty])=>({id,req,r,qty}));
+const DI=[[1,1,12000,'Delivered by road'],[2,2,5500,'Partial - road blocked'],[3,3,500,'Airlifted']].map(([id,al,qty,rem])=>({id,al,qty,rem}));
+const S=[[1,1,'Govt School Shelter',800,650],[2,2,'Community Hall',500,500],[3,3,'Panchayat Building',300,120],[4,4,'Church Hall',400,310],[5,5,'Relief Camp A',1000,420],[6,6,'Town Hall',250,60]].map(([id,a,name,cap,occ])=>({id,a,name,cap,occ}));
+const O=[[1,'NDRF Battalion 4','Government'],[2,'Indian Red Cross','NGO'],[3,'Goonj','NGO'],[4,'Rotary Relief','Private']];
+const V=[['Arjun Rao','Search and Rescue',1],['Meera Nair','First Aid',2],['Karthik S','Logistics',2],['Fatima Khan','Distribution',3],['Rohit Verma','Logistics',3],['Priya D','Counselling',null]];
+const by=(arr,id)=>arr.find(x=>x.id===id);
+const fmt=n=>n.toLocaleString('en-IN');
+// Same formula as the calc_priority() trigger
+Q.forEach(q=>{const a=by(A,q.a),d=by(D,a.d),r=by(R,q.r);
+ const x=0.35*d.sev+0.30*q.urg+0.25*Math.min(5,5*q.qty/r.qty)+0.10*Math.max(1,5-a.km/50);
+ q.score=Math.round(x*100+1e-9)/100;q.status=AL.some(l=>l.req===q.id)?'ALLOCATED':'PENDING';});
+const sevCol=s=>['','#2e8b57','#7aa32e','#d9a21b','#e0701e','#c0392b'][s];
+const pill=(t,c)=>`<span class="pill" style="background:${c}">${t}</span>`;
+const bar=(p,c)=>`<div class="bar"><i style="width:${Math.min(100,p)}%;background:${c||'var(--accent)'}"></i></div>`;
+const tbl=(h,rows)=>`<div class="scroll"><table><tr>${h.map(x=>`<th>${x}</th>`).join('')}</tr>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</table></div>`;
+const free=r=>r.qty-AL.filter(l=>l.r===r.id).reduce((s,l)=>s+l.qty,0);
+
+const T={
+Overview(){
+ const pend=Q.filter(q=>q.status==='PENDING').length,cap=S.reduce((s,x)=>s+x.cap,0),occ=S.reduce((s,x)=>s+x.occ,0);
+ const kp=[[D.length,'Active disasters'],[A.length,'Affected areas'],[fmt(A.reduce((s,a)=>s+a.pop,0)),'People in affected areas'],[pend+' / '+Q.length,'Requests pending'],[Math.round(100*occ/cap)+'%','Shelter occupancy'],[V.length,'Volunteers']];
+ return `<div class="grid">${kp.map(k=>`<div class="card kpi"><b>${k[0]}</b><span>${k[1]}</span></div>`).join('')}</div>
+ <h2>Disasters</h2><div class="card">${tbl(['ID','Type','Severity','Date','Location','Areas','Population'],D.map(d=>{const ar=A.filter(a=>a.d===d.id);return[d.id,d.type,pill(d.sev+' / 5',sevCol(d.sev)),d.date,d.loc,ar.length,fmt(ar.reduce((s,a)=>s+a.pop,0))]}))}</div>
+ <h2>Population by disaster</h2><div class="card">${D.map(d=>{const p=A.filter(a=>a.d===d.id).reduce((s,a)=>s+a.pop,0);return`<div class="row"><span style="width:130px">${d.type}</span><div style="flex:1">${bar(p/1070,sevCol(d.sev))}</div><span class="note">${fmt(p)}</span></div>`}).join('')}</div>`},
+Priority(){
+ const L=[...Q].sort((a,b)=>b.score-a.score);
+ return `<h2>Priority queue</h2><p class="note">Score = 0.35 × severity + 0.30 × urgency + 0.25 × demand (capped at 5) + 0.10 × distance factor, computed exactly as the <code>calc_priority()</code> trigger does at insert time.</p>
+ <div class="card">${tbl(['#','Area','Resource','Qty','Urgency','Score','Priority','Status'],L.map((q,i)=>[q.id,by(A,q.a).name,by(R,q.r).name,fmt(q.qty),q.urg,`<b>${q.score.toFixed(2)}</b>`,bar(q.score*20),pill(q.status,q.status==='PENDING'?'#e0701e':'#1e7a4a')]))}</div>`},
+Allocation(){
+ return `<h2>Priority-based allocation simulator</h2><p class="note">Pending requests for the chosen resource are served in score order from the free stock (available minus already allocated). This is a front-end simulation; it does not write to the database.</p>
+ <div class="row"><select id="rs">${R.map(r=>`<option value="${r.id}">${r.name}</option>`).join('')}</select><button class="btn" id="go">Run allocation</button></div><div id="out" class="card"></div>`},
+Shelters(){
+ const c=p=>p>=100?'var(--bad)':p>=75?'var(--accent2)':'var(--accent)';
+ return `<h2>Shelter occupancy</h2><div class="card">${tbl(['Shelter','Area','Capacity','Occupancy','Fill','%'],[...S].sort((a,b)=>b.occ/b.cap-a.occ/a.cap).map(s=>{const p=100*s.occ/s.cap;return[s.name,by(A,s.a).name,s.cap,s.occ,bar(p,c(p)),p.toFixed(1)+'%'+(p>=100?' '+pill('FULL','#c0392b'):'')]}))}</div>`},
+Resources(){
+ return `<h2>Stock versus demand</h2><div class="card">${tbl(['Resource','Location','Stock','Total demand','Demand / stock','Allocated','Free stock'],R.map(r=>{const dm=Q.filter(q=>q.r===r.id).reduce((s,q)=>s+q.qty,0),p=100*dm/r.qty;return[r.name,r.loc,fmt(r.qty)+' '+r.unit,fmt(dm),bar(p,p>50?'var(--accent2)':'var(--accent)')+' <span class="note">'+Math.round(p)+'%</span>',fmt(r.qty-free(r)),fmt(free(r))]}))}</div><p class="note">Amber bars mark resources where demand exceeds 50% of stock (the HAVING query).</p>`},
+Distribution(){
+ return `<h2>Allocation and delivery tracking</h2><div class="card">${tbl(['Alloc','Area','Resource','Allocated','Distributed','Pending delivery','Progress'],AL.map(l=>{const q=by(Q,l.req),dd=DI.filter(x=>x.id&&x.al===l.id),done=dd.reduce((s,x)=>s+x.qty,0),p=100*done/l.qty;return[l.id,by(A,q.a).name,by(R,l.r).name,fmt(l.qty),fmt(done),l.qty-done>0?pill(fmt(l.qty-done),'#e0701e'):pill('Complete','#1e7a4a'),bar(p)+' <span class="note">'+Math.round(p)+'%</span>']}))}</div>
+ <h2>Distribution log</h2><div class="card">${tbl(['ID','Allocation','Quantity','Remarks'],DI.map(x=>[x.id,x.al,fmt(x.qty),x.rem]))}</div>`},
+People(){
+ return `<div class="two"><div><h2>Organizations</h2><div class="card">${tbl(['Name','Type','Volunteers'],O.map(o=>[o[1],o[2],V.filter(v=>v[2]===o[0]).length]))}</div></div>
+ <div><h2>Volunteers</h2><div class="card">${tbl(['Name','Skill','Organization'],V.map(v=>[v[0],v[1],v[2]?O[v[2]-1][1]:'Independent']))}</div></div></div>`},
+Performance(){
+ return `<h2>Performance analysis</h2><p class="note">Run this in pgAdmin to compare an indexed and an unindexed priority sort on a large table, then enter your own measured times below. The dashboard does not invent timings.</p>
+<pre>CREATE TABLE bench AS
+SELECT g AS id, (random()*5)::numeric(4,2) AS priority_score FROM generate_series(1,200000) g;
+ANALYZE bench;
+EXPLAIN ANALYZE SELECT * FROM bench ORDER BY priority_score DESC LIMIT 10;  -- no index
+CREATE INDEX idx_bench ON bench (priority_score DESC);
+ANALYZE bench;
+EXPLAIN ANALYZE SELECT * FROM bench ORDER BY priority_score DESC LIMIT 10;  -- with index</pre>
+<div class="card"><div class="row"><label>Without index (ms) <input id="t1" type="number" min="0" step="0.01"></label><label>With index (ms) <input id="t2" type="number" min="0" step="0.01"></label><button class="btn" id="cmp">Compare</button></div><div id="cres" class="note"></div></div>`}
+};
+const nav=document.getElementById('nav'),main=document.getElementById('main');
+function show(k){nav.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.k===k));main.innerHTML=T[k]();
+ if(k==='Allocation')document.getElementById('go').onclick=()=>{
+  const r=by(R,+document.getElementById('rs').value);let left=free(r);
+  const L=Q.filter(q=>q.r===r.id&&q.status==='PENDING').sort((a,b)=>b.score-a.score);
+  const rows=L.map(q=>{const g=Math.min(q.qty,left);left-=g;return[q.id,by(A,q.a).name,q.score.toFixed(2),fmt(q.qty),fmt(g),g===q.qty?pill('FULL','#1e7a4a'):g>0?pill('PARTIAL','#e0701e'):pill('UNMET','#c0392b')]});
+  document.getElementById('out').innerHTML=`<p>Free stock before: <b>${fmt(free(r))} ${r.unit}</b> | after: <b>${fmt(left)}</b></p>`+(rows.length?tbl(['Req','Area','Score','Requested','Allocated','Result'],rows):'<p class="note">No pending requests for this resource.</p>');};
+ if(k==='Performance')document.getElementById('cmp').onclick=()=>{const a=+document.getElementById('t1').value,b=+document.getElementById('t2').value;
+  document.getElementById('cres').textContent=a>0&&b>0?`Speed-up: ${(a/b).toFixed(1)}× (${((1-b/a)*100).toFixed(0)}% faster with the index).`:'Enter both timings in milliseconds.';};}
+Object.keys(T).forEach((k,i)=>{const b=document.createElement('button');b.textContent=k;b.dataset.k=k;b.onclick=()=>show(k);nav.appendChild(b)});
+document.getElementById('theme').onclick=()=>{const r=document.documentElement,dk=r.dataset.theme==='dark'||(!r.dataset.theme&&matchMedia('(prefers-color-scheme:dark)').matches);r.dataset.theme=dk?'light':'dark'};
+show('Overview');
+</script>
+</body>
+</html>
